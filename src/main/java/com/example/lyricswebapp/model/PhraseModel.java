@@ -13,7 +13,7 @@ public class PhraseModel {
     @Column(nullable = false)
     private String phrase;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "song_id", nullable = false)
     private SongModel song;
 

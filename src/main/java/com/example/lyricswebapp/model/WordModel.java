@@ -23,7 +23,7 @@ public class WordModel {
     private int line;
     private int lineLocation;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "song_id")
     @JsonBackReference
     private SongModel song;

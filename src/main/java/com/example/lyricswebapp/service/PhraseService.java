@@ -1,6 +1,9 @@
 package com.example.lyricswebapp.service;
 
 import com.example.lyricswebapp.dto.PhraseOccurrenceDTO;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.data.util.Pair;
 import com.example.lyricswebapp.model.PhraseModel;
 import com.example.lyricswebapp.model.SongModel;
@@ -15,6 +18,9 @@ import java.util.*;
 @Service
 public class PhraseService {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private final PhraseRepository phraseRepository;
     private final SongRepository songRepository;
 
@@ -24,12 +30,13 @@ public class PhraseService {
         this.songRepository = songRepository;
     }
 
+    @Transactional
     public void savePhrasesFromSong(SongModel song) {
         // Retrieve the words for the song
         List<WordModel> words = song.getWords();
         Set<Pair<String, Integer>> detectedPhrases = detectPhrases(words);
 
-        // Save the detected phrases
+        SongModel managedSong = entityManager.merge(song);
         for (Pair<String, Integer> phraseWithLocation : detectedPhrases) {
             String phrase = phraseWithLocation.getFirst();
             Integer location = phraseWithLocation.getSecond();
@@ -37,7 +44,7 @@ public class PhraseService {
             PhraseModel phraseModel = new PhraseModel();
             phraseModel.setPhrase(phrase);
             phraseModel.setStartIndex(location);
-            phraseModel.setSong(song);
+            phraseModel.setSong(managedSong); // Use the managed entity
             phraseModel.setLength(phrase.length());
             phraseRepository.save(phraseModel);
         }
