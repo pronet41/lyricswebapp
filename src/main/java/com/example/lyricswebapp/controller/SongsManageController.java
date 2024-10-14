@@ -2,6 +2,7 @@ package com.example.lyricswebapp.controller;
 
 import com.example.lyricswebapp.model.SongModel;
 import com.example.lyricswebapp.model.SongsManageModel;
+import com.example.lyricswebapp.service.PhraseService;
 import com.example.lyricswebapp.service.SongsManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,31 +14,39 @@ import java.util.List;
 @RequestMapping("/api/songs")
 public class SongsManageController {
 
+    private final SongsManageService songService;
+    private final PhraseService phraseService;
+
     @Autowired
-    private SongsManageService uploadService;
+    public SongsManageController(SongsManageService songService, PhraseService phraseService) {
+        this.songService = songService;
+        this.phraseService = phraseService;
+    }
 
     @PostMapping("/upload")
     public ResponseEntity<SongModel> uploadLyrics(@RequestBody SongsManageModel uploadRequestModel) {
-        SongModel savedSong = uploadService.saveSongAndWords(uploadRequestModel);
+        SongModel savedSong = songService.saveSongAndWords(uploadRequestModel);
+
+        phraseService.savePhrasesFromSong(savedSong);
         
         return ResponseEntity.ok(savedSong);
     }
 
     @GetMapping("")
     public ResponseEntity<List<SongModel>> getAllSongs() {
-        List<SongModel> songs = uploadService.getAllSongs();
+        List<SongModel> songs = songService.getAllSongs();
         return ResponseEntity.ok(songs);
     }
 
     @GetMapping("/{id}/download")
     public ResponseEntity<SongModel> downloadSong(@PathVariable Long id) {
-        SongModel song = uploadService.getSongById(id);
+        SongModel song = songService.getSongById(id);
         return ResponseEntity.ok(song);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSong(@PathVariable Long id) {
-        boolean isDeleted = uploadService.deleteSongById(id);
+        boolean isDeleted = songService.deleteSongById(id);
         if (isDeleted) {
             return ResponseEntity.ok("Song deleted successfully");
         } else {
