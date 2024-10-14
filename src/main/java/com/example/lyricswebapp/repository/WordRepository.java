@@ -22,4 +22,6 @@ public interface WordRepository extends JpaRepository<WordModel, Long> {
     List<WordModel> findByNameIn(List<String> wordNames);
 
     WordModel findByName(String wordName);
+
+    List<WordModel> findAllByName(String wordName);
 }

@@ -28,13 +28,12 @@ public class WordModel {
     @JsonBackReference
     private SongModel song;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "words_in_groups",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
-    @JsonIgnoreProperties("words")
     private Set<GroupModel> groups = new HashSet<>();;
 
     public Set<GroupModel> getGroups() {

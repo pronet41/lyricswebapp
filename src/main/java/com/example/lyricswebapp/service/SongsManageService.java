@@ -40,6 +40,7 @@ public class SongsManageService {
             word.setSong(song);
             wordRepository.save(word);
         }
+        song.setWords(wordModels);
 
         return song;
     }

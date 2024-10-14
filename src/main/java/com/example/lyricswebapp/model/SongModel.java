@@ -19,7 +19,10 @@ public class SongModel {
 
 
     @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<WordModel> words;  // This defines the relationship to the Word entity
+    private List<WordModel> words;
+
+    @OneToMany(mappedBy = "song", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<PhraseModel> phrases;
 
     public Long getId() {
         return id;
