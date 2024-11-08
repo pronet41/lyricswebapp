@@ -15,20 +15,15 @@ import java.util.List;
 public class SongsManageController {
 
     private final SongsManageService songService;
-    private final PhraseService phraseService;
 
     @Autowired
     public SongsManageController(SongsManageService songService, PhraseService phraseService) {
         this.songService = songService;
-        this.phraseService = phraseService;
     }
 
     @PostMapping("/upload")
     public ResponseEntity<SongModel> uploadLyrics(@RequestBody SongsManageModel uploadRequestModel) {
         SongModel savedSong = songService.saveSongAndWords(uploadRequestModel);
-
-        phraseService.savePhrasesFromSong(savedSong);
-        
         return ResponseEntity.ok(savedSong);
     }
 

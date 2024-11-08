@@ -15,17 +15,21 @@ import java.util.stream.Collectors;
 @Service
 public class WordsService {
 
-    @Autowired
-    private WordRepository wordRepository;
+    private final WordRepository wordRepository;
+
+    private final SongRepository songRepository;
+
+    private final GroupRepository groupRepository;
+
+    private final WordsInGroupRepository wordsInGroupRepository;
 
     @Autowired
-    private SongRepository songRepository;
-
-    @Autowired
-    private GroupRepository groupRepository;
-
-    @Autowired
-    private WordsInGroupRepository wordsInGroupRepository;
+    public WordsService (WordRepository wordRepository, SongRepository songRepository, GroupRepository groupRepository, WordsInGroupRepository wordsInGroupRepository) {
+        this.wordRepository = wordRepository;
+        this.songRepository = songRepository;
+        this.groupRepository = groupRepository;
+        this.wordsInGroupRepository = wordsInGroupRepository;
+    }
 
     public List<WordModel> getWords(List<String> songIds, List<String> wordGroup) {
         List<SongModel> songs = new ArrayList<>();
