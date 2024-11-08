@@ -1,7 +1,5 @@
 package com.example.lyricswebapp.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -23,7 +21,7 @@ public class SongModel {
     private List<WordModel> words;
 
 
-    @OneToMany(mappedBy = "song", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PhraseModel> phrases;
 
     public Long getId() {

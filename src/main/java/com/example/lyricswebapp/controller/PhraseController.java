@@ -1,13 +1,14 @@
 package com.example.lyricswebapp.controller;
 
-import com.example.lyricswebapp.dto.PhraseOccurrenceDTO;
+import com.example.lyricswebapp.dto.PhraseDTO;
+import com.example.lyricswebapp.dto.PhraseRequestDTO;
+import com.example.lyricswebapp.model.PhraseModel;
 import com.example.lyricswebapp.service.PhraseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/analysis")
@@ -20,8 +21,26 @@ public class PhraseController {
         this.phraseService = phraseService;
     }
 
-    @GetMapping("/phrases")
-    public List<PhraseOccurrenceDTO> getRecurringPhrases() {
-        return phraseService.getRecurringPhrases();
+    @PostMapping("/phrases/create")
+    public ResponseEntity<PhraseModel> createPhrase(@RequestBody PhraseRequestDTO createPhraseRequest) {
+        PhraseModel savedPhrase = phraseService.createUserDefinedPhrase(createPhraseRequest);
+        return ResponseEntity.ok(savedPhrase);
     }
+
+    @DeleteMapping("/phrases/delete")
+    public ResponseEntity<String> deletePhrase(@RequestBody PhraseRequestDTO deleteRequestDTO) {
+        boolean isDeleted = phraseService.deletePhrase(deleteRequestDTO.getPhrase(), deleteRequestDTO.getSongId());
+        if (isDeleted) {
+            return ResponseEntity.ok("Phrase deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("Phrase not found for the specified song");
+        }
+    }
+
+    @GetMapping("/phrases/{songId}")
+    public ResponseEntity<List<PhraseDTO>> getPhrasesBySongId(@PathVariable Long songId) {
+        List<PhraseDTO> phrases = phraseService.getPhrasesBySongId(songId);
+        return ResponseEntity.ok(phrases);
+    }
+
 }

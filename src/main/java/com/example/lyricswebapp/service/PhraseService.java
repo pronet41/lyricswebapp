@@ -1,27 +1,23 @@
 package com.example.lyricswebapp.service;
 
-import com.example.lyricswebapp.dto.PhraseOccurrenceDTO;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-import org.springframework.data.util.Pair;
+import com.example.lyricswebapp.dto.PhraseDTO;
+import com.example.lyricswebapp.dto.PhraseRequestDTO;
 import com.example.lyricswebapp.model.PhraseModel;
 import com.example.lyricswebapp.model.SongModel;
-import com.example.lyricswebapp.model.WordModel;
 import com.example.lyricswebapp.repository.PhraseRepository;
 import com.example.lyricswebapp.repository.SongRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PhraseService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final PhraseRepository phraseRepository;
+
     private final SongRepository songRepository;
 
     @Autowired
@@ -30,58 +26,29 @@ public class PhraseService {
         this.songRepository = songRepository;
     }
 
+    public PhraseModel createUserDefinedPhrase(PhraseRequestDTO request) {
+        // Find the song by ID
+        SongModel song = songRepository.findById(request.getSongId())
+                .orElseThrow(() -> new RuntimeException("Song not found"));
+
+        // Create and save the PhraseModel
+        PhraseModel phrase = new PhraseModel();
+        phrase.setPhrase(request.getPhrase());
+        phrase.setSong(song);
+
+        return phraseRepository.save(phrase);
+    }
+
     @Transactional
-    public void savePhrasesFromSong(SongModel song) {
-        // Retrieve the words for the song
-        List<WordModel> words = song.getWords();
-        Set<Pair<String, Integer>> detectedPhrases = detectPhrases(words);
-
-        SongModel managedSong = entityManager.merge(song);
-        for (Pair<String, Integer> phraseWithLocation : detectedPhrases) {
-            String phrase = phraseWithLocation.getFirst();
-            Integer location = phraseWithLocation.getSecond();
-
-            PhraseModel phraseModel = new PhraseModel();
-            phraseModel.setPhrase(phrase);
-            phraseModel.setStartIndex(location);
-            phraseModel.setSong(managedSong); // Use the managed entity
-            phraseModel.setLength(phrase.length());
-            phraseRepository.save(phraseModel);
-        }
+    public boolean deletePhrase(String phrase, Long songId) {
+        int deletedCount = phraseRepository.deleteByPhraseAndSongId(phrase, songId);
+        return deletedCount > 0;
     }
 
-    public List<PhraseOccurrenceDTO> getRecurringPhrases() {
-        // This query counts occurrences of each phrase and groups them
-        List<Object[]> results = phraseRepository.findRecurringPhrases();
-
-        // Convert the result into a list of PhraseOccurrenceDTOs
-        List<PhraseOccurrenceDTO> occurrences = new ArrayList<>();
-        for (Object[] result : results) {
-            String phrase = (String) result[0];
-            Long occurrenceCount = (Long) result[1];
-            occurrences.add(new PhraseOccurrenceDTO(phrase, occurrenceCount));
-        }
-
-        return occurrences;
-    }
-
-    private Set<Pair<String, Integer>> detectPhrases(List<WordModel> words) {
-        Set<Pair<String, Integer>> detectedPhrases = new HashSet<>();
-
-        // Logic to automatically detect repeating sequences of words
-        for (int i = 0; i < words.size(); i++) {
-            for (int j = i + 1; j < words.size(); j++) {
-                // Compare words and detect recurring phrases
-                StringBuilder phrase = new StringBuilder();
-                for (int k = i; k <= j; k++) {
-                    phrase.append(words.get(k).getName()).append(" ");
-                }
-                String finalPhrase = phrase.toString().trim();
-
-                // Add the phrase and its starting location to the set
-                detectedPhrases.add(Pair.of(finalPhrase, words.get(i).getLocation()));
-            }
-        }
-        return detectedPhrases;
+    public List<PhraseDTO> getPhrasesBySongId(Long songId) {
+        List<PhraseModel> phrases = phraseRepository.findBySongId(songId);
+        return phrases.stream()
+                .map(phrase -> new PhraseDTO(phrase.getId(), phrase.getPhrase()))
+                .collect(Collectors.toList());
     }
 }

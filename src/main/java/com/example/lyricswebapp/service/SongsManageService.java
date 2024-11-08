@@ -14,11 +14,15 @@ import java.util.List;
 @Service
 public class SongsManageService {
 
-    @Autowired
-    private SongRepository songRepository;
+    private final SongRepository songRepository;
+
+    private final WordRepository wordRepository;
 
     @Autowired
-    private WordRepository wordRepository;
+    public SongsManageService (SongRepository songRepository, WordRepository wordRepository) {
+        this.songRepository = songRepository;
+        this.wordRepository = wordRepository;
+    }
 
     public SongModel saveSongAndWords(SongsManageModel uploadRequestModel) {
         SongModel songModel = uploadRequestModel.getSong();

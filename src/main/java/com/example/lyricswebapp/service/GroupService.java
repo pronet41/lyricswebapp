@@ -16,11 +16,15 @@ import java.util.stream.Collectors;
 @Service
 public class GroupService {
 
-    @Autowired
-    private GroupRepository groupRepository;
+    private final GroupRepository groupRepository;
+
+    private final WordRepository wordRepository;
 
     @Autowired
-    private WordRepository wordRepository;
+    public GroupService (WordRepository wordRepository, GroupRepository groupRepository) {
+        this.wordRepository = wordRepository;
+        this.groupRepository = groupRepository;
+    }
 
     public List<GroupDTO> getAllGroups() {
         List<GroupModel> groups = groupRepository.findAll();

@@ -13,15 +13,9 @@ public class PhraseModel {
     @Column(nullable = false)
     private String phrase;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "song_id", nullable = false)
     private SongModel song;
-
-    @Column(nullable = false)
-    private int startIndex; // The index of the first word of the phrase in the song.
-
-    @Column(nullable = false)
-    private int length; // Length of the phrase (in words).
 
     // Getters and setters
     public Long getId() {
@@ -46,21 +40,5 @@ public class PhraseModel {
 
     public void setSong(SongModel song) {
         this.song = song;
-    }
-
-    public int getStartIndex() {
-        return startIndex;
-    }
-
-    public void setStartIndex(int startIndex) {
-        this.startIndex = startIndex;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
     }
 }

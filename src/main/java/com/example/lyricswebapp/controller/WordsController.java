@@ -9,14 +9,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/words")
 public class WordsController {
 
+    private final WordsService wordsService;
+
     @Autowired
-    private WordsService wordsService;
+    public WordsController (WordsService wordsService) {
+        this.wordsService = wordsService;
+    }
 
     @GetMapping
     public ResponseEntity<List<WordModel>> getWords(
