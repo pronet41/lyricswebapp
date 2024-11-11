@@ -1,6 +1,7 @@
 package com.example.lyricswebapp.service;
 
 
+import com.example.lyricswebapp.dto.SongStatisticsDTO;
 import com.example.lyricswebapp.model.SongModel;
 import com.example.lyricswebapp.model.SongsManageModel;
 import com.example.lyricswebapp.model.WordModel;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SongsManageService {
@@ -63,6 +65,44 @@ public class SongsManageService {
             return true;  // Song deleted successfully
         }
         return false;  // Song not found
+    }
+
+
+    public List<SongStatisticsDTO> calculateStatistics(List<Long> songIds) {
+        List<SongModel> songs = songRepository.findAllById(songIds);
+
+        return songs.stream().map(song -> {
+            List<WordModel> words = song.getWords();
+
+            double avgWordsPerVerse = words.stream()
+                    .collect(Collectors.groupingBy(WordModel::getVerse))
+                    .values()
+                    .stream()
+                    .mapToInt(List::size)
+                    .average()
+                    .orElse(0);
+
+            double avgWordsPerLine = words.stream()
+                    .collect(Collectors.groupingBy(WordModel::getLine))
+                    .values()
+                    .stream()
+                    .mapToInt(List::size)
+                    .average()
+                    .orElse(0);
+
+            double avgWordLength = words.stream()
+                    .mapToInt(word -> word.getName().length())
+                    .average()
+                    .orElse(0);
+
+            return new SongStatisticsDTO(
+                    song.getId(),
+                    words.size(),
+                    avgWordsPerVerse,
+                    avgWordsPerLine,
+                    avgWordLength
+            );
+        }).collect(Collectors.toList());
     }
 }
 
