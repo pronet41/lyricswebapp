@@ -1,5 +1,6 @@
 package com.example.lyricswebapp.controller;
 
+import com.example.lyricswebapp.dto.SongStatisticsDTO;
 import com.example.lyricswebapp.model.SongModel;
 import com.example.lyricswebapp.model.SongsManageModel;
 import com.example.lyricswebapp.service.PhraseService;
@@ -47,6 +48,12 @@ public class SongsManageController {
         } else {
             return ResponseEntity.status(404).body("Song not found");
         }
+    }
+
+    @PostMapping("/statistics")
+    public ResponseEntity<List<SongStatisticsDTO>> getSongStatistics(@RequestBody List<Long> songIds) {
+        List<SongStatisticsDTO> statistics = songService.calculateStatistics(songIds);
+        return ResponseEntity.ok(statistics);
     }
 
 
