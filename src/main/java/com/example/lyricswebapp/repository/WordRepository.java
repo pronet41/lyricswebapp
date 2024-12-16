@@ -10,16 +10,5 @@ import java.util.List;
 @Repository
 public interface WordRepository extends JpaRepository<WordModel, Long> {
 
-    // Find words by multiple songs
-    List<WordModel> findBySongIn(List<SongModel> songs);
-
-    // Find words by multiple songs and a word group
-    List<WordModel> findBySongInAndNameIn(List<SongModel> songs, List<String> wordNames);
-
-    // Find words in a given list
-    List<WordModel> findByNameIn(List<String> wordNames);
-
-    WordModel findByName(String wordName);
-
     List<WordModel> findAllByName(String wordName);
 }
