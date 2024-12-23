@@ -34,6 +34,12 @@ public class GroupController {
         return ResponseEntity.ok(createdGroup.getId());
     }
 
+    @DeleteMapping("/{groupId}")
+    public ResponseEntity<Void> deleteGroup(@PathVariable Long groupId) {
+        groupService.deleteGroup(groupId);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping("/add-word")
     public ResponseEntity<Void> addWordToGroup(@RequestBody WordToGroupDTO request) {
         groupService.addWordToGroup(request.getGroupId(), request.getWord());

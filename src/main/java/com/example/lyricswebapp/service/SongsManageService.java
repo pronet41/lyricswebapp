@@ -7,12 +7,11 @@ import com.example.lyricswebapp.model.SongsManageModel;
 import com.example.lyricswebapp.model.WordModel;
 import com.example.lyricswebapp.repository.SongRepository;
 import com.example.lyricswebapp.repository.WordRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +27,7 @@ public class SongsManageService {
         this.wordRepository = wordRepository;
     }
 
+    @Transactional
     public SongModel saveSongAndWords(SongsManageModel uploadRequestModel) {
         SongModel songModel = uploadRequestModel.getSong();
         SongModel song = new SongModel();
@@ -61,6 +61,7 @@ public class SongsManageService {
         return  songRepository.getReferenceById(id);
     }
 
+    @Transactional
     public boolean deleteSongById(Long id) {
         if (songRepository.existsById(id)) {
             songRepository.deleteById(id);

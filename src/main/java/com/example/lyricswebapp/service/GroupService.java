@@ -40,10 +40,27 @@ public class GroupService {
         }).collect(Collectors.toList());
     }
 
+    @Transactional
     public GroupModel createGroup(String name) {
         GroupModel group = new GroupModel();
         group.setName(name);
         return groupRepository.save(group);
+    }
+
+    @Transactional
+    public void deleteGroup(Long groupId) {
+        GroupModel group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        for (WordModel word : group.getWords()) {
+            word.getGroups().remove(group);
+        }
+
+        group.getWords().clear();
+
+        groupRepository.save(group);
+
+        groupRepository.deleteById(groupId);
     }
 
     @Transactional
