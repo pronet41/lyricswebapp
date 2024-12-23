@@ -26,6 +26,7 @@ public class PhraseService {
         this.songRepository = songRepository;
     }
 
+    @Transactional
     public PhraseModel createUserDefinedPhrase(PhraseRequestDTO request) {
         // Find the song by ID
         SongModel song = songRepository.findById(request.getSongId())
