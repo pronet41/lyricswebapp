@@ -27,7 +27,7 @@ public class SongsManageService {
         this.wordRepository = wordRepository;
     }
 
-    @Transactional
+
     public SongModel saveSongAndWords(SongsManageModel uploadRequestModel) {
         SongModel songModel = uploadRequestModel.getSong();
         SongModel song = new SongModel();
@@ -61,7 +61,7 @@ public class SongsManageService {
         return  songRepository.getReferenceById(id);
     }
 
-    @Transactional
+
     public boolean deleteSongById(Long id) {
         if (songRepository.existsById(id)) {
             songRepository.deleteById(id);
